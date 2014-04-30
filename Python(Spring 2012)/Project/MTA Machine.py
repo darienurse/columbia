@@ -1,0 +1,525 @@
+'''
+@author: Darien and Jenee
+'''
+title = 'MTA Machine'
+
+import os
+import pickle
+from Card import Card
+from Bank import Money
+from tkinter  import *
+
+#this class creates the GUI interface and contains all the functions for the buttons on the interface
+class Communicator:
+    def __init__(self, parent,pocket):
+        self.widgets = []
+        self.textFields = []
+        self.mFrameExist = False
+        self.myContainer1 = Frame(parent) ###
+        self.myContainer1.pack()
+        self.parent=parent
+        self.pocket=pocket
+        self.cardIndex=0
+        self.topFrame = Label(self.parent,text = 'Welcome! Touch start to begin.',font = ("Verdana", 40),background = 'black',
+                                foreground = 'white',padx = 30,pady = 30)
+        self.centerFrame = Frame(self.parent, background="tan",borderwidth=5,  relief='ridge',
+                                 width=800, height=800,)
+        self.topFrame.pack(side=TOP, fill='both')
+        self.centerFrame.pack(fill='both', expand=1)
+        self.start()
+    #start initializes the widgets on the GUI, the buttons, the cards, and fields for the money input      
+    def start(self):
+        self.myCards= self.getCards()
+        self.fieldVar = []
+        self.wizVal = []
+        self.cards = [Card("regular",0),Card("one-day",0),Card("weekly",0),Card("biweekly",0),Card("monthly",0)]
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        self.topFrame["text"]= "Welcome! Touch start to begin."
+        self.topFrame['font']=("Verdana", 40)
+        self.startButton = Button()
+        # now we add the buttons to the buttons_frame    
+        star=PhotoImage(file="star.gif")
+        self.createButton(self.startButton,self.centerFrame, TOP, 400, 400, star,
+                           "START",'green',"Helvetica", 40,'c',.5,.5,self.chooseOrRefill)
+          
+    #this function creates the screen in which the user is asked if he wants to buy a new card or refill a card from the pickle folder   
+    def chooseOrRefill(self):
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        newCard = PhotoImage(file="all.gif").subsample(3, 3)
+        refill = PhotoImage(file="addMoney.gif").subsample(3, 3)
+        self.topFrame["text"]= "What would you like to do?"
+        self.topFrame["background"] = 'black'
+        self.topFrame['font']=("Verdana", 40)
+        self.topFrame.pack(side=TOP, fill='both')
+        self.chooseButton = Button()
+        self.refillButton = Button()
+        self.createButton(self.chooseButton,self.centerFrame, TOP, 400, 400, newCard,
+                           "Buy a new MetroCard",'white',"Helvetica", 20,'c',.3,.5,self.choose)
+        self.createButton(self.refillButton, self.centerFrame, TOP, 400, 400, refill, 
+                          "Refill MetroCard",'white', "Helvetica", 20, 'c', .7, .5,self.refill)
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                           None,'white',"Helvetica", 20,'c',.04,.90,self.start)
+    
+    #this function is called if user decides to buy a new card
+    #this function created the screen in which the user chooses what kind of Metrocard he wants - a regular, one-day, weekly, biweekly, or monthly
+    def choose(self):
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        self.topFrame["background"] = 'black'
+        if (self.mFrameExist):
+            self.messageFrame.destroy()
+        self.messageFrame = Label(self.parent)
+        self.messageFrame.destroy()
+        self.cards = [Card("regular",0),Card("one-day",0),Card("weekly",0),Card("biweekly",0),Card("monthly",0)]
+        self.wizCounter = 0
+        self.topFrame["text"]= "Choose a Card"
+        self.topFrame.pack(side=TOP, fill='both')
+        regImg=PhotoImage(file=(self.cards[0].image)).subsample(5,5)
+        oneImg=PhotoImage(file=(self.cards[1].image)).subsample(5,5)
+        weekImg=PhotoImage(file=(self.cards[2].image)).subsample(5,5)
+        biweekImg=PhotoImage(file=(self.cards[3].image)).subsample(5,5)
+        monthImg=PhotoImage(file=(self.cards[4].image)).subsample(5,5)
+        optImg = PhotoImage(file="opt.gif").subsample(5,5)
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, regImg,
+                           "Regular MetroCard: \nAdd any amount to this card.",'grey',"Helvetica", 10,'c',.15,.2,lambda: self.refillAmount(self.cards[0],False, self.choose))
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, oneImg,
+                           "One-day MetroCard: \n$8.25 for unlimited rides for one day.",'grey',"Helvetica", 10,'c',.5,.2,lambda: self.purchase(self.cards[1],self.cards[1].cost))
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, weekImg,
+                           "Weekly MetroCard: \n$29.00 for unlimited rides for one week.",'grey',"Helvetica", 10,'c',.3,.5,lambda: self.purchase(self.cards[2],self.cards[2].cost))    
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, biweekImg,
+                           "Biweekly MetroCard: \n$51.50 for unlimited rides for two weeks.",'grey',"Helvetica", 10,'c',.85,.2,lambda: self.purchase(self.cards[3],self.cards[3].cost))
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, monthImg,
+                           "Monthly MetroCard: \n$104.00 for unlimited rides for one month.",'grey',"Helvetica", 10,'c',.7,.5,lambda: self.purchase(self.cards[4],self.cards[4].cost))
+        self.createButton(Button(),self.centerFrame, LEFT, 400, 150, optImg,
+                           "Not sure? \nTry using the MetroCard wizard \nto help you choose the best card.",'grey',"Helvetica", 10,'c',.5,.8,lambda: self.wizard(False))
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                           None,'white',"Helvetica", 20,'c',.04,.90,self.chooseOrRefill)
+    
+    #this function is called when the user decides to refill a Metrocard
+    #the function looks through the pocket folder for cards in the form of pickle files and opens them. 
+    #Based on their defined attributes, they are displayed on the screen created and the user may scroll through them
+    def refill(self):
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        self.topFrame["text"]= "Choose a Card to refill"
+        
+        self.topFrame.pack(side=TOP, fill='both')
+        self.messageFrame = Label(self.parent,text = 'Information', font = ("Verdana", 20),background = 'black',
+                                  foreground = 'white',padx = 0,pady = 0) 
+        self.widgets.append(self.messageFrame)
+        self.messageFrame.pack(side=BOTTOM, fill='both')
+        self.centerFrame.pack(fill='both', expand=1)
+        if (not self.myCards):
+            self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                           None,'white',"Helvetica", 20,'c',.5,.5,self.chooseOrRefill)
+            self.messageFrame["text"] = "You don't seem to have any MetroCards to refill."
+        else:
+            currentCard = self.myCards[self.cardIndex]
+            photo = PhotoImage(file=currentCard.image).subsample(1,1)
+            photoLabel = Label(self.centerFrame, image=photo, background=self.centerFrame['background'])
+            photoLabel.place(in_=self.centerFrame, anchor='c', relx=.5, rely=.8) 
+            self.widgets.append(photoLabel)
+            photoLabel.image = photo
+            photoLabel.pack()                                                      
+            self.messageFrame["text"] = "Type: " + currentCard.cardType.capitalize() +"\nPurchased: " + str(currentCard.name)
+            if (currentCard.cardType == 'regular'):
+                self.messageFrame["text"]=self.messageFrame["text"]+"\nBalance: $" + str("{0:.2f}".format(currentCard.balance))
+                self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="addMoney.gif").subsample(9, 9),
+                               "REFILL",'#00FFFF',"Helvetica", 20,'c',.96,.87,lambda: self.refillAmount(currentCard,False,self.refill))
+            else:
+                self.messageFrame["text"]=self.messageFrame["text"]+"\nExpires: " + str(currentCard.expire)
+                
+            if (self.cardIndex>0):
+                self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="previous.gif").subsample(3, 3),
+                                  None,self.centerFrame['background'],"Helvetica", 20,'c',.1,.5,lambda: self.whichCard(False))
+            if (self.cardIndex<len(self.myCards)-1):
+                self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="next.gif").subsample(3, 3),
+                               None,self.centerFrame['background'],"Helvetica", 20,'c',.9,.5,lambda: self.whichCard(True))      
+            self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                               None,'white',"Helvetica", 20,'c',.04,.87,self.chooseOrRefill)
+        self.centerFrame.pack_forget()
+        self.centerFrame.pack(fill='both', expand=1)
+        
+    #if the user chooses to refill a regular card, this function is called
+    # the user enters the amount in a text box and this function checks to see if the amount is valid
+    def refillAmount(self, thisCard,error,prev):
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        self.topFrame["text"]= "How much money would you\n like to add to this Card?"
+        self.topFrame["font"] =("Verdana", 30)
+        self.topFrame.pack(side=TOP, fill='both')
+        if error:
+            self.messageFrame = Label(self.parent,text = "The value you entered was not valid. Please try again.\nThis card's current balance is $"+ str(thisCard.balance), 
+                                  font = ("Verdana", 20),background = 'red',foreground = 'white',padx = 0,pady = 0) 
+        else:
+            self.messageFrame = Label(self.parent,text = "This card's current balance is $"+ str(thisCard.balance), 
+                                      font = ("Verdana", 20),background = 'black',foreground = 'white',padx = 0,pady = 0) 
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                               None,'white',"Helvetica", 20,'c',.04,.90,prev)
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="submit.gif").subsample(2, 2),
+                          None,'white',"Helvetica", 20,'c',.96,.90,lambda: self.verify(field.get(),thisCard,prev))
+        photo = PhotoImage(file=thisCard.image).subsample(1,1)
+        photoLabel = Label(self.centerFrame, image=photo, background=self.centerFrame['background'])
+        photoLabel.image = photo
+        photoLabel.pack()
+        field = Entry(self.centerFrame)
+        field.place(relx=.5, rely=.9)
+        field.insert(0,"Enter value here")
+        self.widgets.extend([self.messageFrame,photoLabel,field])
+        self.messageFrame.pack(side=BOTTOM, fill='both')
+        self.centerFrame.pack_forget()
+        self.centerFrame.pack(fill='both', expand=1)
+        
+        
+    #this function is called when the user is done chooses the card he wants to buy or when the user is done entering the amount he wants to add on a card
+    #this function calls for the user to enter money
+    #money is entered by pressing the money representing the bill amount. As the user presses the button, the text field next to the button increases
+    #once the user is finished pressing the buttons for the money, he must click submit for the program to add and process the amount entered        
+    def purchase(self,thisCard,price):
+        self.destroy(self.widgets)
+        self.textFields = []
+        self.fieldVar = []
+        self.topFrame["text"]= "This card costs $" + str("{0:.2f}".format(price))+ "\nPlease insert money."
+        self.topFrame["background"] = 'black'
+        self.topFrame['font']=("Verdana", 40)
+        self.topFrame.pack(side=TOP, fill='both')
+        for i in [self.centerFrame['width']-400,self.centerFrame['width']+200]:
+            for j in range(4):
+                ypos=(j+1)*(self.centerFrame['height']/10)
+                var = StringVar()
+                field = Entry(self.centerFrame, state='disabled', textvariable=var)
+                var.set('0')
+                field.place(x=i, y=ypos)
+                self.textFields.append(field)
+                self.fieldVar.append(var)
+        picPlacement = [self.centerFrame['width']-600,self.centerFrame['width']]                                                       
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money1.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(1)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(0))
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money2.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(2)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(1))    
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money3.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(3)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(2)) 
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money4.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(4)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(3))
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money5.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(1)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(4))             
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money6.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(2)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(5))                           
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money7.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(3)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(6))                           
+        self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money8.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(4)*(self.centerFrame['height']/10)
+                                  ,lambda: self.increment(7))                                                                          
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                               None,'white',"Helvetica", 20,'c',.04,.90,self.chooseOrRefill)
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="submit.gif").subsample(3, 3),
+                          None,'tan',"Helvetica", 20,'c',.96,.90, lambda: self.submit(self.fieldVar, thisCard, price))
+    
+    #this function is the wizard for the user. If the user wants to find the best card for their needs, this function has an algorithm for determining the best card to buy    
+    def wizard(self,error):
+        self.destroy(self.widgets)
+        self.topFrame['font'] = ("Verdana", 20)
+        if (self.wizCounter == 0 and not error):
+            self.messageFrame = Label(self.parent,text = "METROCARD WIZARD!", font = ("Verdana", 20),
+                                  background = '#66FF33',foreground = 'white',padx = 0,pady = 0) 
+            self.mFrameExist = True
+            self.topFrame["text"]= "Welcome to the MetroCard Wizard:\nOn average, how many times do you ride the train during one day?"
+        if (self.wizCounter == 1):
+            self.topFrame["text"]= "Welcome to the MetroCard Wizard:\nOn average, how many times do you ride the train during one week?"
+        if (self.wizCounter == 2):
+            self.topFrame["text"]= "Welcome to the MetroCard Wizard:\nOn average, how many times do you ride the train during two weeks?"
+        if (self.wizCounter == 3):
+            self.topFrame["text"]= "Welcome to the MetroCard Wizard:\nOn average, how many times do you ride the train during one month?"
+        if (self.wizCounter == 4):
+            self.destroy(self.textFields)
+            bestCard = self.getBestCard()
+            photo = PhotoImage(file=bestCard.image).subsample(1,1)
+            photoLabel = Label(self.centerFrame, image=photo, background=self.centerFrame['background'])
+            photoLabel.place(in_=self.centerFrame, anchor='c', relx=.5, rely=.8) 
+            self.widgets.append(photoLabel)
+            photoLabel.image = photo
+            photoLabel.pack()          
+            self.topFrame["text"]= "According to our data, we would recommend a\n" + bestCard.cardType.capitalize() + " MetroCard\nDo You Accept?"
+        if error:
+            self.messageFrame["text"] =  "The value you entered was not valid. Please try again" 
+            self.messageFrame["background"] = 'red'
+        else:
+            self.messageFrame["text"]=  "METROCARD WIZARD!"
+            self.messageFrame["background"] = '#66FF33'  
+        self.topFrame.pack(side=TOP, fill='both')
+        
+        if (self.wizCounter == 4):
+            self.messageFrame.destroy()
+            if (bestCard.cardType == "regular"):
+                self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="star.gif").subsample(3, 3),
+                                        "GET CARD!",'gold',"Helvetica", 10,'c',.96,.90,lambda: self.refillAmount(bestCard,False, self.choose))
+            else:
+                self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="star.gif").subsample(3, 3),
+                                        "GET CARD!",'gold',"Helvetica", 10,'c',.96,.90,lambda: self.purchase(bestCard,bestCard.cost))
+        else:
+            field = Entry(self.centerFrame)
+            field.place(x=550, y=100)
+            self.textFields.append(field)
+            self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="submit.gif").subsample(3, 3),
+                                    None,'tan',"Helvetica", 20,'c',.96,.90,lambda: self.verify2(field.get(),False)) 
+            self.messageFrame.pack(side=BOTTOM, fill='both')
+        self.createButton(Button(),self.centerFrame, TOP, 100, 100, PhotoImage(file="back.gif").subsample(3, 3),
+                               None,'white',"Helvetica", 20,'c',.04,.90,self.choose)   
+        self.centerFrame.pack_forget()
+        self.centerFrame.pack(fill='both', expand=1)
+    #once the user is finished entering money for the card, this function calls Bank to check if the amount is sufficient and displays the change if it is
+    #the card is also made into a pickle file and put in the pocket folder
+    #if amount is not sufficient, the screen asks for more money        
+    def submit(self, money, card, price):
+        regular = False
+        bills = []
+        for i in money:
+            bills.append(int(i.get()))
+        register = Money()
+        if card.cardType == "regular":
+            value = register.getMoneyGiveChange(price, bills) 
+            regular = True 
+        else:
+            value = register.getMoneyGiveChange(card.cost, bills)  
+            
+        if type(value) == type(float()) or type(value) == type(int()):
+            self.topFrame["text"]= "You have entered an insufficient amount of money.\nPlease add more or go back."
+            self.topFrame["background"] = 'red'
+            self.topFrame.pack(side=TOP, fill='both')
+        else:
+            self.topFrame["background"] = 'black'
+            self.destroy(self.widgets)
+            self.destroy(self.textFields)
+            trueDir = os.getcwd()
+            os.chdir(self.pocket)
+            pickle.dump(card, open(card.cardType + str(self.formatCard(card.name)), "wb"))
+                
+            os.chdir(trueDir)
+            if regular ==False:
+                self.topFrame["text"]= "Thank you. Here is your change.\n Your "+ (str(card.cardType)).title() + " Metrocard is in your Pocket."
+            else:
+                self.topFrame["text"]= "Thank you. Here is your change and $" + str("{0:.2f}".format(card.balance)) + " MetroCard.\n You received a 7 percent bonus on the amount you added.\n Your card is in your pocket."
+            self.topFrame.pack(side=TOP, fill='both')
+            count = 0
+            for i in [self.centerFrame['width']-400,self.centerFrame['width']+200]:
+                for j in range(4):
+                    ypos=(j+1)*(self.centerFrame['height']/10)
+                    var = StringVar()
+                    field = Entry(self.centerFrame, state='disabled', textvariable=var)
+                    var.set(str(value[count]))
+                    count = count + 1
+                    field.place(x=i, y=ypos)
+                    self.textFields.append(field)
+                    self.fieldVar.append(var)
+            picPlacement = [self.centerFrame['width']-600,self.centerFrame['width']]      
+           
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money1.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(1)*(self.centerFrame['height']/10)
+                                  ,None)
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money2.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(2)*(self.centerFrame['height']/10)
+                                  ,None)
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money3.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(3)*(self.centerFrame['height']/10)
+                                  ,None) 
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money4.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[0],(4)*(self.centerFrame['height']/10)
+                                  ,None)
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money5.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(1)*(self.centerFrame['height']/10)
+                                  ,None)             
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money6.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(2)*(self.centerFrame['height']/10)
+                                  ,None)                           
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money7.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(3)*(self.centerFrame['height']/10)
+                                  ,None)                           
+            self.createMoneyButton(Button(),self.centerFrame, TOP, 80, 80, 
+                                  PhotoImage(file="money8.gif").subsample(4, 4),
+                                  None,'white',"Helvetica", 20,'c',picPlacement[1],(4)*(self.centerFrame['height']/10)
+                                  ,None)                                                                          
+            self.createButton(Button(),self.centerFrame, TOP, 210, 100, PhotoImage(file="startover.gif").subsample(3, 3),
+                               None,'white',"Helvetica", 20,'c',.09,.90, lambda: self.startover())
+            
+    #once a transaction is finished, the start over button may be pressed and this function will simply restart the program        
+    def startover(self):
+        self.destroy(self.widgets)
+        self.destroy(self.textFields)
+        self.start()
+        
+    #this function creates the correct format for a valid pickle file name    
+    def formatCard(self, nm):
+        name = str(nm)
+        name = name.replace(" ", "-")
+        name = name.replace(":", "-")
+        name = name.replace(".", "-")
+        return name +".p"    
+    #this function verifies that the amount that the user tries to refill his card amount is a valid int or float
+    #if the value is valid, the bonus is added and the card can be purchased
+    def verify(self, inputs,thisCard,prev):
+        try:
+            value = round(float(inputs),2)
+        except ValueError:
+            self.refillAmount(thisCard, True, prev)
+        else:
+            if (value<=0):
+                self.refillAmount(thisCard, True, prev)
+            else:
+                thisCard.balance = thisCard.balance + (value*1.07) #bonus is set here for regular card
+                self.purchase(thisCard,value)
+     
+    #this function verifies that the inputs the user enters in the wizard are valid number        
+    def verify2(self, inputs,finished):
+        try:
+            value = int(float(inputs))    
+        except ValueError:
+            self.wizard(True)
+        else:
+            if (value<=0):
+                self.wizard(True)
+            else:
+                self.wizVal.append(int(inputs))
+                self.wizCounter = self.wizCounter +1
+                self.wizard(False)
+     
+    #this is a helper function for the wizard and contains the algorithm for choosing the best card for the user       
+    def getBestCard(self):
+        bestcard = self.cards[0]
+
+        if (self.wizVal[0]>4):
+            bestcard = self.cards[1]
+        if (self.wizVal[1]>12):
+            bestcard = self.cards[2]
+        if (self.wizVal[2]>21):
+            bestcard = self.cards[3]     
+        if (self.wizVal[3]>42):
+            bestcard = self.cards[4]
+        return bestcard
+    
+    #when a money button is pressed, this function increments the corresponding field that contains the number of bills entered      
+    def increment(self,index):
+        newValue = int(self.fieldVar[index].get()) + 1
+        self.fieldVar[index].set(str(newValue))
+             
+    #this function destroys the GUI component specified by list    
+    def destroy(self, lists):
+        for x in lists:
+            if (x == None):
+                lists.remove(x)
+            else:
+                x.destroy()
+        self.myContainer1.pack()
+            
+    #this is the function for creating a button and the attributes, such as text on the button, color, and placement, for the button         
+    def createButton(self,name,placement,compounding,w,h,img,txt,backg,ft,ftSize,anch,rx,ry,com):
+        name = Button(placement, compound=compounding, width=w, height=h, image=img,
+                              text=txt, bg=backg,font=(ft,ftSize),command=com)
+        name['command'] = com
+        name.focus_force()       
+        name.pack()    
+        name.place(in_=placement, anchor=anch, relx=rx, rely=ry)        
+        name.image = img
+        # save the button's image from garbage collection
+        self.widgets.append(name)
+    
+    #this is the function for creating the buttons for money and the attributes, such as text on the button, image, and placement, for the button             
+    def createMoneyButton(self,name,placement,compounding,w,h,img,txt,backg,ft,ftSize,anch,rx,ry,com):
+        name = Button(placement, compound=compounding, width=w, height=h, image=img,
+                              text=txt, bg=backg,font=(ft,ftSize),command=com)
+        name.focus_force()       
+        name.pack()    
+        name.place(in_=placement, anchor=anch, x=rx, y=ry)        
+        name.image = img
+        # save the button's image from garbage collection
+        self.widgets.append(name)    
+    
+    #this function is for scrolling through the cards that are in the pocket on the refill screen
+    def whichCard(self,increasing):  
+        if (increasing):
+            self.cardIndex = self.cardIndex + 1
+        else:
+            self.cardIndex = self.cardIndex - 1
+        self.refill()  
+    
+    #this function is used to fetch the pickle files from the pocket directory     
+    def getCards(self):
+        myCards=[]
+        allList=[]
+        for x in os.listdir(self.pocket):
+            if(x.endswith(".p")):
+                nextCard = os.path.join(self.pocket,x)
+                if (isinstance(pickle.load(open(os.path.abspath(nextCard),"rb")),Card)):
+                    myCards.append(pickle.load(open(os.path.abspath(nextCard),"rb")))
+            else:
+                allList.append(x)
+        for y in allList:
+            if (os.path.isdir(y) == True):
+                nextList = os.listdir(y)
+                pathName = os.path.join(os.path.dirname(y),os.path.basename(y))
+                myCards.remove(y) 
+                for z in nextList:
+                    if(z.endswith(".p")):
+                        nextCard = os.path.join(self.pocket,z)
+                        if (isinstance(pickle.load(open(os.path.abspath(nextCard),"rb")),Card)):
+                            myCards.append(pickle.load(open(os.path.abspath(nextCard),"rb")))
+                    else: 
+                        allList.append(os.path.join(pathName,z))
+                nextList= []
+        return myCards
+        
+    #this function checks to see that the pocket folder exists. The pocket folder must exist for the program to run    
+    def dir_list_folder(self, head_dir, dir_name):
+        finalPathList = []
+        for root, dirs,files in os.walk(head_dir):
+            for d in dirs:
+                if d.upper() == dir_name.upper():
+                    finalPathList.append(os.path.join(root, d))
+        return finalPathList                 
+######################################################################
+
+# Create demo in root window for testing.
+if __name__ == '__main__':
+    def dir_list_folder(head_dir, dir_name):
+        finalPathList = []
+        for root, dirs, files in os.walk(head_dir):
+            for d in dirs:
+                if d.upper() == dir_name.upper():
+                    finalPathList.append(os.path.join(root, d))
+        return finalPathList 
+    
+    path = dir_list_folder(os.getcwd(),'pocket')
+    if not path:
+        print ("Pocket Folder not found! The Metro Card Machine has created a directory named 'pocket' in " + os.getcwd())
+        os.makedirs(os.path.join(os.getcwd(),'pocket'))
+        path = dir_list_folder(os.getcwd(),'pocket')
+    root = Tk()
+    root.title(title)
+    exitButton = Button(root, text = 'Exit', command = root.destroy)
+    exitButton.pack(side = 'bottom')
+    widget = Communicator(root,path[0])
+    root.mainloop()
+

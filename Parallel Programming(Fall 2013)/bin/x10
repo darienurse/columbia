@@ -1,0 +1,290 @@
+#!/usr/bin/env bash
+# DO NOT EDIT - This file was automatically generated.
+UNAME=`uname -smp | sed -e 's/ /,/g'`
+FILE_SEP='/'; if [[ "$UNAME" = CYGWIN* ]]; then FILE_SEP='\\'; fi
+PATH_SEP=':'; if [[ "$UNAME" = CYGWIN* ]]; then PATH_SEP=';'; fi
+
+prog="$(readlink "$0" 2>&1)"
+[ $? -eq 127 -o "$prog" = "" ] && prog="$0"
+TOP="$(cd "$(dirname "$prog")/.." && pwd)"
+if [[ "$UNAME" = CYGWIN* ]]; then PATH="$PATH:$TOP/lib"; TOP="$(cygpath -am "$TOP")"; fi
+
+[ -n "$JAVA_HOME" ] || JAVA_HOME='C:/Program Files/IBM/Java60'
+[ -n "$JRE_HOME" ] || JRE_HOME='C:\Program Files\IBM\Java60\jre'
+if [[ "$UNAME" = CYGWIN* ]]; then JAVA_HOME="$(cygpath -am "$JAVA_HOME")"; JRE_HOME="$(cygpath -am "$JRE_HOME")"; fi
+if [ -n "$JAVA_HOME" -a -e "$JAVA_HOME/bin/java" ]; then
+    JAVA="$JAVA_HOME/bin/java"
+    JAR="$JAVA_HOME/bin/jar"
+elif [ -n "$JRE_HOME" -a -e "$JRE_HOME/bin/java" ]; then
+    JAVA="$JRE_HOME/bin/java"
+    JAR="$JRE_HOME/bin/jar"
+else
+    echo "JAVA_HOME ($JAVA_HOME) is not pointing to a JRE or a JDK"
+    exit 1
+fi
+if [[ "$UNAME" = CYGWIN* ]]; then JAVA="$(cygpath -au "$JAVA")"; JAR="$(cygpath -au "$JAR")"; fi
+
+# NOTE: the above assumes that Cygwin==win32 (probably valid)
+
+#CONFIG_FILE='standard.cfg'
+LPG_JAR='lpg.jar'
+ECJ_JAR='ecj.jar'
+WALA_JAR='com.ibm.wala.cast.java_1.0.0.201101071300.jar'
+WALA2_JAR='com.ibm.wala.cast_1.0.0.201101071300.jar'
+WALA3_JAR='com.ibm.wala.core_1.1.3.201101071300.jar'
+WALA4_JAR='com.ibm.wala.shrike_1.3.1.201101071300.jar'
+MATH_JAR='commons-math3-3.0.jar'
+CROSS_COMPILE_BGP='false'
+CROSS_COMPILE_BGQ='false'
+
+MAIN_CLASS='$Main'
+
+help=""
+time=""
+timelimit=""
+verbose=""
+extra_cp=""
+extra_lib=""
+ms=""
+mx=""
+ss=""
+defs=""
+dev=""
+nocompressedrefs=""
+noassert=""
+java_args=()
+args=()
+
+PRINT_DIR=""
+
+while [ -n "$1" ]; do
+    case "$1" in
+        -h|-help|--help) help="1"; break;;
+        -v|-verbose|--verbose) verbose="1";;
+        -t|-time) time="time ";;
+        -timelimit) shift; timelimit="timeout --signal=9 $1 ";;
+#        -ms) shift; ms="$1";;
+        -ms*) ms="${1##-ms}";;
+        -Xms*) ms="${1##-Xms}";;
+        -mx) shift; mx="$1";;
+        -mx*) mx="${1##-mx}";;
+        -Xmx*) mx="${1##-Xmx}";;
+#        -ss) shift; ss="$1";;
+        -ss*) ss="${1##-ss}";;
+        -Xss*) ss="${1##-Xss}";;
+        -D*) if [[ "${1##-D}" = java.library.path=* ]]; then
+                 echo >&2 "Error: Cannot reset java.library.path, use -libpath instead"
+                 exit 1
+             fi
+             # TODO: add tests for more system properties above
+             defs="${defs} $1";;
+        -classpath|-cp)
+            shift
+            if [ -z "$extra_cp" ] ; then
+                extra_cp="${1}"
+            else
+                extra_cp="${extra_cp}${PATH_SEP}${1}"
+            fi
+            ;;
+        -libpath) shift; extra_lib="$1";;
+        -config) shift; config="$1.cfg";;
+        -nocompressedrefs) nocompressedrefs="true";;
+        -noassert) noassert="true";;
+        -dev) dev="true";;
+        -pkg-conf=) echo "Please use the -help option to get a list of valid options"; exit 1;;
+        -pkg-conf=*) PRINT_DIR="${1##-pkg-conf=}" ; args=(dummy argument) ;;
+        -pkg-conf) echo "Please use the -help option to get a list of valid options"; exit 1;;
+        -J*) java_args=("${java_args[@]}" "${1##-J}");;
+        -*=*) java_args=("${java_args[@]}" "-Dx10.${1##-}");;
+        -*) java_args=("${java_args[@]}" "-Dx10.${1##-}=true");;
+        *.jar) args=("${args[@]}" -jar "$1"); shift; args=("${args[@]}" "$@"); break;;
+        *) if [ -z "$main" ]; then
+               main="$1"
+           fi
+           args=("${args[@]}" "$1\$${MAIN_CLASS}"); shift; args=("${args[@]}" "$@"); break;;
+    esac
+    shift
+done
+
+if [ -n "$help" -o -z "${args[*]}" ]; then
+    cat << EOF
+Usage: x10 [options] <main-class> [arg0 arg1 ...]
+where [options] includes:
+    -t -time                 display execution time
+    -timelimit <limit>       force exit when the time limit is reached (suffix of s,m,h,d)
+    -v -verbose --verbose    print verbose debugging information
+    -h -help --help          print this message
+    -ms<size>                set initial heap size to <size>, e.g. -ms256m
+    -mx<size>                set maximum heap size to <size>, e.g. -mx1024m
+    -ss<size>                set maximum Java thread stack size to <size>
+    -D<name>=<value>         set system property <name> to <value>
+    -classpath <path>        search path for class files
+    -libpath <path>          search path for native libraries
+    -config <conf>           (IGNORED) read configuration from etc${FILE_SEP}<conf>.cfg
+    -nocompressedrefs        disable compressed references (64-bit JVM only)
+    -noassert                disable assertion check
+    -dev                     developer mode (use unpackaged X10 libraries)
+    -pkg-conf=dir            print absolute directory, where dir is one of
+                               [bin, etc, include, lib, stdlib]
+    -J<arg>                  [USE WITH CAUTION] pass <arg> directly to Java.
+        e.g., use -J-verbose to make Java execution verbose.
+EOF
+    exit 1
+fi
+
+CONFIG_DIR="${TOP}${FILE_SEP}etc"
+LIB_DIR="${TOP}${FILE_SEP}lib"
+STDLIB_DIR="${TOP}${FILE_SEP}stdlib"
+
+if [ "${PRINT_DIR}XX" != XX ] 
+then
+    case ${PRINT_DIR} in
+	bin) echo ${TOP}${FILE_SEP}bin ;;
+	etc) echo ${CONFIG_DIR} ;;
+	include) echo ${TOP}${FILE_SEP}include ;;
+	lib) echo ${LIB_DIR} ;;
+	stdlib) echo ${STDLIB_DIR} ;;
+	*) echo "pkg-conf: Unrecognized option (${PRINT_DIR})"; exit 1 ;;
+    esac
+    exit 0
+fi
+
+[ -n "$config" ] && config="-Dx10.configuration=\"${CONFIG_DIR}${FILE_SEP}${config}\""
+
+classpath=""
+[ -n "$dev" ] && classpath="${TOP}${FILE_SEP}..${FILE_SEP}x10.runtime${FILE_SEP}classes${PATH_SEP}"
+classpath=".${PATH_SEP}${classpath}${STDLIB_DIR}${FILE_SEP}x10.jar${PATH_SEP}${LIB_DIR}${FILE_SEP}${MATH_JAR}"
+
+if [ -z "$dev" ]; then
+  if [[ ! -a "${STDLIB_DIR}${FILE_SEP}x10.jar" ]]; then
+    echo >&2 "Error: Cannot find x10 runtime" at "${STDLIB_DIR}${FILE_SEP}x10.jar"
+    exit 1
+  fi
+fi
+
+if [ -n "$extra_cp" ]; then
+   classpath="$extra_cp${PATH_SEP}$classpath"
+fi
+
+externpath="${LIB_DIR}"
+if [ -n "$LD_LIBRARY_PATH" ] ; then
+    OLD_IFS="$IFS"
+    IFS=':'
+    for i in $LD_LIBRARY_PATH ; do
+       externpath="$i${PATH_SEP}$externpath"
+    done
+    IFS="$OLD_IFS"
+fi
+if [ -n "$extra_lib" ]; then
+   externpath="$extra_lib${PATH_SEP}$externpath"
+fi
+
+if [[ "$UNAME" = CYGWIN* ]]; then 
+    if [ -n "$ENABLE_CYGWIN_MULTIVM" ]; then
+        JAVA="$(cygpath -au "$TOP/bin/cyglaunch")"
+        launcher="${TOP}${FILE_SEP}bin${FILE_SEP}X10Launcher"
+    else
+        java_args=("-DX10RT_IMPL=disabled" "${java_args[@]}")
+    fi
+else
+    launcher="${TOP}${FILE_SEP}bin${FILE_SEP}X10Launcher"
+fi
+
+
+# TODO: executable jar
+# Note: use bootstrap class path instead of user class path to make it visible from jar file
+java_args=("-Djava.library.path=$externpath" -classpath "$classpath" "${java_args[@]}")
+#java_args=("-Djava.library.path=$externpath" "-Xbootclasspath/a:$classpath" "${java_args[@]}")
+
+if [ -z "$noassert" ]; then
+   java_args=("-ea" "${java_args[@]}")
+fi
+
+if [ -n "$ss" ]; then
+   java_args=("-Xss$ss" "${java_args[@]}")
+fi
+if [ -n "$mx" ]; then
+   java_args=("-Xmx$mx" "${java_args[@]}")
+fi
+if [ -n "$ms" ]; then
+   java_args=("-Xms$ms" "${java_args[@]}")
+fi
+
+java_args=("${java_args[@]}" ${defs})
+
+java_version=
+# skip loading test in case of executable jar
+if [ -n "$main" ]; then
+command=("$JAVA" -showversion "${java_args[@]}" x10.runtime.impl.java.TestClassLoading "$main\$${MAIN_CLASS}")
+#[ -n "$verbose" ] && echo "${command[*]}"
+java_version=`(
+unset X10_NPLACES
+"${command[@]}" 2>&1
+if [ "$?" -ne "0" ]; then
+  echo >&2 "Error: Cannot load main class for" "$main" "with classpath" "$classpath"
+  exit 1
+fi
+)`
+fi
+
+[ -n "${java_version}" ] || java_version=`"$JAVA" -version 2>&1`
+
+
+#
+# IBM J9 VM specific options
+#
+ibmj9vm=
+ibmj9vmr26=
+ibmj9vm64bit=
+# following pattern matches with bash 3.2 but doesn't match with bash 4.1
+#[[ "${java_version}" =~ ".*IBM J9 VM.*" ]] && ibmj9vm=true
+case "${java_version}" in
+    *IBM\ J9\ VM*) ibmj9vm=true
+    case "${java_version}" in
+        *build\ 2.6*) ibmj9vmr26=true ;;
+    esac
+    case "${java_version}" in
+        *amd64-64*) ibmj9vm64bit=true ;;
+        *ppc64-64*) ibmj9vm64bit=true ;;
+    esac
+    ;;
+esac
+if [ -n "${ibmj9vm}" ]; then
+    ibmj9vmjitopts=
+
+    if [ -n "${ibmj9vmr26}" ]; then
+        # experimental support for java7
+        if [ -n "${ibmj9vmjitopts}" ]; then
+            ibmj9vmjitopts="${ibmj9vmjitopts},"
+        fi
+        ibmj9vmjitopts="${ibmj9vmjitopts}count=1000,bcount=250,milcount=1"
+        if [ -n "${ibmj9vm64bit}" ]; then
+            java_args=("-Xgcpolicy:balanced" "${java_args[@]}")
+        else
+            java_args=("-Xgcpolicy:gencon" "${java_args[@]}")
+        fi
+    else
+        java_args=("-Xgcpolicy:gencon" "${java_args[@]}")
+    fi
+
+    if [ -n "${ibmj9vm64bit}" ]; then
+        if [ -z "${nocompressedrefs}" ]; then
+            java_args=("-Xcompressedrefs" "${java_args[@]}")
+        fi
+    fi
+
+    if [ -n "${ibmj9vmjitopts}" ]; then
+        java_args=("-Xjit:${ibmj9vmjitopts}" "${java_args[@]}")
+    fi
+fi
+
+
+command=("$JAVA" "${java_args[@]}" $config "${args[@]}")
+[ -n "$verbose" ] && echo "${command[*]}"
+if [[ "$UNAME" = CYGWIN* && -z "$ENABLE_CYGWIN_MULTIVM" ]]; then
+    exec $time$timelimit "${command[@]}"
+else 
+    exec $time$timelimit$launcher "${command[@]}"
+fi
+
+exit $?

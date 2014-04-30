@@ -1,0 +1,1 @@
+There is only two files for this program. I am using python 3.0. The client and server modules have main methods at the bottom that take a host and port number as parameters. Users can logout using the command "logout".  

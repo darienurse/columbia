@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="Homework 1"/>
+	<classpathentry kind="src" path="Homework 2"/>
+	<classpathentry kind="src" path="Homework 3"/>
+	<classpathentry kind="src" path="Homework 4"/>
+	<classpathentry kind="src" path="Homework 5"/>
+	<classpathentry kind="src" path="Homework 6"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="C:/Users/Darien/Documents/Other/eclipse/graph"/>
+	<classpathentry kind="lib" path="C:/Users/Darien/Documents/Other/Eclipse Programs/Example Graph/MazeSolution.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

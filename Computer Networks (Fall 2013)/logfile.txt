@@ -1,0 +1,68 @@
+Sat, 16 Nov 2013 14:30:26.0624  Source: 12345 Destination: 2000 Sequence#: 0 Acknowledgement#: 1 ACK FLAG: false FIN FLAG: false RTT: 3.0
+Sat, 16 Nov 2013 14:30:26.0623  Source: 12345 Destination: 2000 Sequence#: 0 Acknowledgement#: 1 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0649  Source: 2000 Destination: 12345 Sequence#: 1 Acknowledgement#: 1 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0649  Source: 2000 Destination: 12345 Sequence#: 1 Acknowledgement#: 1 ACK FLAG: true FIN FLAG: false RTT: 3.0
+Sat, 16 Nov 2013 14:30:26.0650  Source: 12345 Destination: 2000 Sequence#: 1 Acknowledgement#: 2 ACK FLAG: false FIN FLAG: false RTT: 6.125
+Sat, 16 Nov 2013 14:30:26.0650  Source: 12345 Destination: 2000 Sequence#: 1 Acknowledgement#: 2 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0651  Source: 2000 Destination: 12345 Sequence#: 2 Acknowledgement#: 2 ACK FLAG: true FIN FLAG: false RTT: 6.125
+Sat, 16 Nov 2013 14:30:26.0651  Source: 2000 Destination: 12345 Sequence#: 2 Acknowledgement#: 2 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0651  Source: 12345 Destination: 2000 Sequence#: 2 Acknowledgement#: 3 ACK FLAG: false FIN FLAG: false RTT: 5.484375
+Sat, 16 Nov 2013 14:30:26.0651  Source: 12345 Destination: 2000 Sequence#: 2 Acknowledgement#: 3 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0652  Source: 2000 Destination: 12345 Sequence#: 3 Acknowledgement#: 3 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0652  Source: 2000 Destination: 12345 Sequence#: 3 Acknowledgement#: 3 ACK FLAG: true FIN FLAG: false RTT: 5.484375
+Sat, 16 Nov 2013 14:30:26.0652  Source: 12345 Destination: 2000 Sequence#: 3 Acknowledgement#: 4 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0652  Source: 12345 Destination: 2000 Sequence#: 3 Acknowledgement#: 4 ACK FLAG: false FIN FLAG: false RTT: 4.923828125
+Sat, 16 Nov 2013 14:30:26.0653  Source: 2000 Destination: 12345 Sequence#: 4 Acknowledgement#: 4 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0653  Source: 2000 Destination: 12345 Sequence#: 4 Acknowledgement#: 4 ACK FLAG: true FIN FLAG: false RTT: 4.923828125
+Sat, 16 Nov 2013 14:30:26.0654  Source: 12345 Destination: 2000 Sequence#: 4 Acknowledgement#: 5 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0654  Source: 12345 Destination: 2000 Sequence#: 4 Acknowledgement#: 5 ACK FLAG: false FIN FLAG: false RTT: 4.433349609375
+Sat, 16 Nov 2013 14:30:26.0654  Source: 2000 Destination: 12345 Sequence#: 5 Acknowledgement#: 5 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0654  Source: 2000 Destination: 12345 Sequence#: 5 Acknowledgement#: 5 ACK FLAG: true FIN FLAG: false RTT: 4.433349609375
+Sat, 16 Nov 2013 14:30:26.0655  Source: 12345 Destination: 2000 Sequence#: 5 Acknowledgement#: 6 ACK FLAG: false FIN FLAG: false RTT: 4.004180908203125
+Sat, 16 Nov 2013 14:30:26.0655  Source: 12345 Destination: 2000 Sequence#: 5 Acknowledgement#: 6 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0655  Source: 2000 Destination: 12345 Sequence#: 6 Acknowledgement#: 6 ACK FLAG: true FIN FLAG: false RTT: 4.004180908203125
+Sat, 16 Nov 2013 14:30:26.0655  Source: 2000 Destination: 12345 Sequence#: 6 Acknowledgement#: 6 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0656  Source: 12345 Destination: 2000 Sequence#: 6 Acknowledgement#: 7 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0656  Source: 12345 Destination: 2000 Sequence#: 6 Acknowledgement#: 7 ACK FLAG: false FIN FLAG: false RTT: 3.6286582946777344
+Sat, 16 Nov 2013 14:30:26.0657  Source: 2000 Destination: 12345 Sequence#: 7 Acknowledgement#: 7 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0657  Source: 2000 Destination: 12345 Sequence#: 7 Acknowledgement#: 7 ACK FLAG: true FIN FLAG: false RTT: 3.6286582946777344
+Sat, 16 Nov 2013 14:30:26.0657  Source: 12345 Destination: 2000 Sequence#: 7 Acknowledgement#: 8 ACK FLAG: false FIN FLAG: false RTT: 3.3000760078430176
+Sat, 16 Nov 2013 14:30:26.0657  Source: 12345 Destination: 2000 Sequence#: 7 Acknowledgement#: 8 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0658  Source: 2000 Destination: 12345 Sequence#: 8 Acknowledgement#: 8 ACK FLAG: true FIN FLAG: false RTT: 3.3000760078430176
+Sat, 16 Nov 2013 14:30:26.0658  Source: 2000 Destination: 12345 Sequence#: 8 Acknowledgement#: 8 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0658  Source: 12345 Destination: 2000 Sequence#: 8 Acknowledgement#: 9 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0658  Source: 12345 Destination: 2000 Sequence#: 8 Acknowledgement#: 9 ACK FLAG: false FIN FLAG: false RTT: 3.0125665068626404
+Sat, 16 Nov 2013 14:30:26.0659  Source: 2000 Destination: 12345 Sequence#: 9 Acknowledgement#: 9 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0659  Source: 2000 Destination: 12345 Sequence#: 9 Acknowledgement#: 9 ACK FLAG: true FIN FLAG: false RTT: 3.0125665068626404
+Sat, 16 Nov 2013 14:30:26.0660  Source: 12345 Destination: 2000 Sequence#: 9 Acknowledgement#: 10 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0660  Source: 12345 Destination: 2000 Sequence#: 9 Acknowledgement#: 10 ACK FLAG: false FIN FLAG: false RTT: 2.8859956935048103
+Sat, 16 Nov 2013 14:30:26.0661  Source: 2000 Destination: 12345 Sequence#: 10 Acknowledgement#: 10 ACK FLAG: true FIN FLAG: false RTT: 2.8859956935048103
+Sat, 16 Nov 2013 14:30:26.0661  Source: 2000 Destination: 12345 Sequence#: 10 Acknowledgement#: 10 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0661  Source: 12345 Destination: 2000 Sequence#: 10 Acknowledgement#: 11 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0661  Source: 12345 Destination: 2000 Sequence#: 10 Acknowledgement#: 11 ACK FLAG: false FIN FLAG: false RTT: 2.650246231816709
+Sat, 16 Nov 2013 14:30:26.0662  Source: 2000 Destination: 12345 Sequence#: 11 Acknowledgement#: 11 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0662  Source: 2000 Destination: 12345 Sequence#: 11 Acknowledgement#: 11 ACK FLAG: true FIN FLAG: false RTT: 2.650246231816709
+Sat, 16 Nov 2013 14:30:26.0662  Source: 12345 Destination: 2000 Sequence#: 11 Acknowledgement#: 12 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0662  Source: 12345 Destination: 2000 Sequence#: 11 Acknowledgement#: 12 ACK FLAG: false FIN FLAG: false RTT: 2.4439654528396204
+Sat, 16 Nov 2013 14:30:26.0663  Source: 2000 Destination: 12345 Sequence#: 12 Acknowledgement#: 12 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0663  Source: 2000 Destination: 12345 Sequence#: 12 Acknowledgement#: 12 ACK FLAG: true FIN FLAG: false RTT: 2.4439654528396204
+Sat, 16 Nov 2013 14:30:26.0663  Source: 12345 Destination: 2000 Sequence#: 12 Acknowledgement#: 13 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0663  Source: 12345 Destination: 2000 Sequence#: 12 Acknowledgement#: 13 ACK FLAG: false FIN FLAG: false RTT: 2.263469771234668
+Sat, 16 Nov 2013 14:30:26.0664  Source: 2000 Destination: 12345 Sequence#: 13 Acknowledgement#: 13 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0664  Source: 2000 Destination: 12345 Sequence#: 13 Acknowledgement#: 13 ACK FLAG: true FIN FLAG: false RTT: 2.263469771234668
+Sat, 16 Nov 2013 14:30:26.0665  Source: 12345 Destination: 2000 Sequence#: 13 Acknowledgement#: 14 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0665  Source: 12345 Destination: 2000 Sequence#: 13 Acknowledgement#: 14 ACK FLAG: false FIN FLAG: false RTT: 2.1055360498303344
+Sat, 16 Nov 2013 14:30:26.0665  Source: 2000 Destination: 12345 Sequence#: 14 Acknowledgement#: 14 ACK FLAG: true FIN FLAG: false RTT: 2.1055360498303344
+Sat, 16 Nov 2013 14:30:26.0665  Source: 2000 Destination: 12345 Sequence#: 14 Acknowledgement#: 14 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0666  Source: 12345 Destination: 2000 Sequence#: 14 Acknowledgement#: 15 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0666  Source: 12345 Destination: 2000 Sequence#: 14 Acknowledgement#: 15 ACK FLAG: false FIN FLAG: false RTT: 1.9673440436015426
+Sat, 16 Nov 2013 14:30:26.0668  Source: 2000 Destination: 12345 Sequence#: 15 Acknowledgement#: 15 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0668  Source: 2000 Destination: 12345 Sequence#: 15 Acknowledgement#: 15 ACK FLAG: true FIN FLAG: false RTT: 1.9673440436015426
+Sat, 16 Nov 2013 14:30:26.0669  Source: 12345 Destination: 2000 Sequence#: 15 Acknowledgement#: 16 ACK FLAG: false FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0669  Source: 12345 Destination: 2000 Sequence#: 15 Acknowledgement#: 16 ACK FLAG: false FIN FLAG: false RTT: 1.9714260381513498
+Sat, 16 Nov 2013 14:30:26.0670  Source: 2000 Destination: 12345 Sequence#: 16 Acknowledgement#: 16 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0670  Source: 2000 Destination: 12345 Sequence#: 16 Acknowledgement#: 16 ACK FLAG: true FIN FLAG: false RTT: 1.9714260381513498
+Sat, 16 Nov 2013 14:30:26.0671  Source: 12345 Destination: 2000 Sequence#: 16 Acknowledgement#: 17 ACK FLAG: false FIN FLAG: true
+Sat, 16 Nov 2013 14:30:26.0671  Source: 12345 Destination: 2000 Sequence#: 16 Acknowledgement#: 17 ACK FLAG: false FIN FLAG: true RTT: 1.974997783382431
+Sat, 16 Nov 2013 14:30:26.0671  Source: 2000 Destination: 12345 Sequence#: 17 Acknowledgement#: 17 ACK FLAG: true FIN FLAG: false
+Sat, 16 Nov 2013 14:30:26.0671  Source: 2000 Destination: 12345 Sequence#: 17 Acknowledgement#: 17 ACK FLAG: true FIN FLAG: false RTT: 1.974997783382431
