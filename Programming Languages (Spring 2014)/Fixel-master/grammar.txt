@@ -1,0 +1,117 @@
+Grammar
+program:
+	statement-list
+	statement-list translation-unit
+
+block:
+	‘:’ NEWLINE INDENT statement-list DEDENT
+
+translation-unit:
+	function-definition
+	translation-unit function-definition
+
+function-definition:
+	ID parameter-declaration block
+
+parameter-declaration:
+	epsilon
+	variable
+	parameter-declaration ‘,’ variable
+
+statement-list:
+	statement
+	statement-list statement
+
+statement: 
+	expression-statement 
+	selection-statement
+	iteration-statement 
+	return-statement
+
+return-statement:
+	‘return’ expression-statement
+
+expression-statement:
+	expression NEWLINE
+
+selection-statement:
+	‘if’ expression block
+	‘if’ expression block ‘else’ block
+
+iteration-statement:
+	‘for’ variable ‘in’ variable block
+	‘forp’ variable ‘in’ variable block
+	‘while’ expression block
+
+expression:
+	assignment-expression
+
+assignment-expression:
+	variable-expression ‘=’ assignment-expression 
+	logical-OR-expression
+
+logical-OR-expression: 
+	logical-AND-expression 
+	logical-OR-expression ‘or’ logical-AND-expression 
+ 
+logical-AND-expression: 
+	equality-expression 
+	logical-AND-expression ‘and’ equality-expression 
+ 
+equality-expression: 
+	relational-expression
+	equality-expression ‘==’ relational-expression 
+	equality-expression ‘!=’ relational-expression
+
+relational-expression:
+	additive-expression
+	relational-expression ‘<’ additive-expression
+	relational-expression ‘>’ additive-expression
+	relational-expression ‘<=’ additive-expression
+	relational-expression ‘>=’ additive-expression
+
+additive-expression: 
+	multiplicative-expression 
+	additive-expression ‘+’ multiplicative-expression 
+	additive-expression ‘-’ multiplicative expression 
+ 
+multiplicative-expression: 
+	logical-NOT-expression
+	multiplicative-expression ‘*’ logical-NOT-expression
+	multiplicative-expression ‘/’ logical-NOT-expression
+
+logical-NOT-expression:
+	intermediate-expression
+	‘not’ logical-NOT-expression
+
+intermediate-expression:
+	primary-expression
+	function-expression
+
+primary-expression: 
+	variable-access-expression
+	STRING 
+	NUMBER
+	TRUE
+	FALSE
+	‘[‘ parameters ‘]’
+	‘(‘ expression ‘)’
+
+function-expression:
+	‘#’ ID parameters
+
+parameters:
+	primary-expression
+	parameters ‘,’ primary-expression
+	epsilon
+
+variable-access-expression:
+	variable-expression
+	variable-access-expression '.' ID
+
+variable-expression:
+	variable
+	variable_expression '[' parameters ']'
+
+variable:
+	‘@’ ID

@@ -1,0 +1,7 @@
+forp @pixel in @image0:
+	@pixel = 255 - @pixel.color
+#generateWallpaper @image0, 1920, 1080
+
+generateWallpaper @imageName, @desktopWidth, @desktopHeight:
+	#stretch @imageName, @desktopWidth, @desktopHeight
+	#caption @imageName, "Welcome to My Computer!"

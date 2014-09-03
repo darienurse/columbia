@@ -1,0 +1,6 @@
+*.pyc
+*~
+*.out
+fixel_to_python_output.py
+parsetab.py
+.coverage

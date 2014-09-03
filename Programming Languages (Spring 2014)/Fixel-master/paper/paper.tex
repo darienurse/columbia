@@ -1,0 +1,100 @@
+\documentclass{article}
+\usepackage[latin1]{inputenc}
+%\usepackage[margin=1.0in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{longtable,tabu}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{caption}
+  \usepackage{courier}
+\setcounter{secnumdepth}{2}
+\setcounter{equation}{0}
+\setcounter{tocdepth}{2}
+\captionsetup{width=10cm}
+
+ \lstset{
+         basicstyle=\footnotesize\ttfamily,        % font size for code
+         numberstyle=\tiny\color{mygray}, % line number style
+         numbersep=5pt,                   % how far the line-numbers are from the code
+         tabsize=2,                  % sets default tabsize to 2 spaces (FOR HOWIE :P)
+         extendedchars=true,         % non-ascii characters, but not for utf8 enc
+         breaklines=true,            % sets automatic line breaking
+         keywordstyle=\color{blue},
+ 	frame=single,                    % adds a frame around the code
+         stringstyle=\color{red}\ttfamily, % string literal style
+         showstringspaces=false,           % show spaces with underscores
+         showtabs=false,             % show tabs within strings adding particular underscores         
+         xleftmargin=17pt,
+         framexleftmargin=17pt,
+         framexrightmargin=5pt,
+         framexbottommargin=4pt
+ }
+
+
+\title{Fixel \\
+COMS W4115 Final Report}
+\author{
+  Kavita Jain-Cocks\\
+  \texttt{kj2264@columbia.edu}
+  \and
+  Amrita Mazumdar\\
+  \texttt{am3210@columbia.edu}
+  \and
+  Darien Nurse\\
+  \texttt{don2102@columbia.edu}
+  \and
+  Nilkanth Patel\\
+  \texttt{njp2110@columbia.edu}
+  \and
+  Matthew Patey\\
+  \texttt{mep2167@columbia.edu}
+   \\}
+ \date{\today}
+\begin{document}
+
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+\input{./sections/whitepaper.tex}
+\input{./sections/lrm.tex}
+\input{./sections/tutorial.tex}
+\input{./sections/projectplan.tex}
+\input{./sections/lang_evol.tex}
+\input{./sections/transl_arch.tex}
+\input{./sections/devel_runtime.tex}
+\lstinputlisting[language=Python]{../fixel}
+\input{./sections/test_plan.tex}
+\input{./sections/concl.tex}
+
+\newpage
+\appendix
+\section{Git Log}
+This log is included to show the evolution of our language.  Since we utilized pair proramming for the majority of this project, this commit history is not indicative of work distribution.
+\input{./gitlog.tex}
+
+\section{Source Code}
+	\subsection{Scripts}
+		\lstinputlisting[language=Python]{../fixel}
+		\lstinputlisting[language=Python]{../src/run_tests.py}
+		\lstinputlisting[language=Python]{../src/run_translator.py}
+		\lstinputlisting[language=Python]{../src/run_test_utils.py}
+    \subsection{Lexer}
+        \lstinputlisting[language=Python]{../src/translator/lexer.py} 
+    \subsection{Parser}
+        \lstinputlisting[language=Python]{../src/translator/parser.py}
+    \subsection{Code Generation}
+        \lstinputlisting[language=Python]{../src/translator/generator.py}
+        \lstinputlisting[language=Python]{../src/translator/post_process.py}
+        \lstinputlisting[language=Python]{../src/translator/translator.py}
+    \subsection{Testing}
+        \lstinputlisting[language=Python]{../src/tests/lexer_tests.py}
+        \lstinputlisting[language=Python]{../src/tests/parser_tests.py}
+        \lstinputlisting[language=Python]{../src/tests/generator_tests.py}
+        \lstinputlisting[language=Python]{../src/tests/fixel_tests.py}
+        \lstinputlisting[language=Python]{../src/tests/test_strings.py}
+        \lstinputlisting[language=Python]{../src/tests/test_utils.py}
+\end{document}

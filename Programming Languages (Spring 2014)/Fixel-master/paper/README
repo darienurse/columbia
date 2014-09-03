@@ -1,0 +1,15 @@
+# Paper Writing:
+1. download pandoc and latex: http://johnmacfarlane.net/pandoc/installing.html
+2. write the sections in markdown files: http://daringfireball.net/projects/markdown/ (see whitepaper for a very basic example)
+3. to compile: run the ./run-me.sh shell script
+4. open the paper.pdf file to check your work!
+5. if the script yells at you, there is probably an error? i hope it doesn't yell at you.
+
+## TO ADD A SECTION TO THE PAPER: 
+- lines 60-63 of paper.tex are examples of including a markdown section in the paper
+- use “\input{./sections/tutorial.tex}” syntax to add your section
+- write that the document is a .tex file even if it is a markdown file!
+
+## TO ADD CODE TO THE PAPER:
+- the source code section demonstrates how to add code from the other sections of the repo into the paper
+- feel free to add code you'd like to hand in!
