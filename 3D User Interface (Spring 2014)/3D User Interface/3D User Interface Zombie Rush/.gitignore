@@ -1,0 +1,10 @@
+Temp/
+Library/
+Build/
+iphone/
+
+*.pidb
+*.userprefs
+*.csproj
+*.unityproj
+*.sln
